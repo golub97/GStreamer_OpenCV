@@ -58,10 +58,9 @@ static gboolean gst_opencvfilter_start (GstBaseTransform * trans);
 static gboolean gst_opencvfilter_stop (GstBaseTransform * trans);
 static gboolean gst_opencvfilter_set_info (GstVideoFilter * filter, GstCaps * incaps,
     GstVideoInfo * in_info, GstCaps * outcaps, GstVideoInfo * out_info);
-static GstFlowReturn gst_opencvfilter_transform_frame (GstVideoFilter * filter,
-    GstVideoFrame * inframe, GstVideoFrame * outframe);
-static GstFlowReturn gst_opencvfilter_transform_frame_ip (GstVideoFilter * filter,
-    GstVideoFrame * frame);
+//static GstFlowReturn gst_opencvfilter_transform_frame (GstVideoFilter * filter, GstVideoFrame * inframe, GstVideoFrame * outframe);
+static GstFlowReturn gst_opencvfilter_transform_frame_ip (GstVideoFilter * filter, GstVideoFrame * frame);
+//static GstCaps *gst_opencvfilter_transform_caps (GstBaseTransform * trans, GstPadDirection direction, GstCaps * caps, GstCaps * filter); //NiGo
 
 enum
 {
@@ -69,14 +68,14 @@ enum
 };
 
 /* pad templates */
-
+//BGRA
 /* FIXME: add/remove formats you can handle */
 #define VIDEO_SRC_CAPS \
-    GST_VIDEO_CAPS_MAKE("{ BGRA }")
+    GST_VIDEO_CAPS_MAKE("{YUY2}")
 
 /* FIXME: add/remove formats you can handle */
 #define VIDEO_SINK_CAPS \
-    GST_VIDEO_CAPS_MAKE("{ BGRA }")
+    GST_VIDEO_CAPS_MAKE("{ YUY2}")
 
 
 /* class initialization */
@@ -111,11 +110,32 @@ gst_opencvfilter_class_init (GstOpencvfilterClass * klass)
   gobject_class->finalize = gst_opencvfilter_finalize;
   base_transform_class->start = GST_DEBUG_FUNCPTR (gst_opencvfilter_start);
   base_transform_class->stop = GST_DEBUG_FUNCPTR (gst_opencvfilter_stop);
+  //base_transform_class->transform_caps = GST_DEBUG_FUNCPTR (gst_opencvfilter_transform_caps); //NiGo
+  //base_transform_class->passthrough_on_same_caps = TRUE; //NiGo
   video_filter_class->set_info = GST_DEBUG_FUNCPTR (gst_opencvfilter_set_info);
-  video_filter_class->transform_frame = GST_DEBUG_FUNCPTR (gst_opencvfilter_transform_frame);
+  //video_filter_class->transform_frame = GST_DEBUG_FUNCPTR (gst_opencvfilter_transform_frame);
   video_filter_class->transform_frame_ip = GST_DEBUG_FUNCPTR (gst_opencvfilter_transform_frame_ip);
 
 }
+
+//NiGo
+/*static GstCaps * gst_opencvfilter_transform_caps (GstBaseTransform * trans,
+                                  GstPadDirection direction,
+                                  GstCaps * caps,
+                                  GstCaps * filter)
+{
+  GstCaps *result = gst_caps_copy (caps);
+
+  if (filter) {
+    GstCaps *intersection =
+        gst_caps_intersect_full (filter, result, GST_CAPS_INTERSECT_FIRST);
+    gst_caps_unref (result);
+    result = intersection;
+  }
+
+  return result;
+}*/
+
 
 static void
 gst_opencvfilter_init (GstOpencvfilter *opencvfilter)
@@ -208,14 +228,14 @@ gst_opencvfilter_set_info (GstVideoFilter * filter, GstCaps * incaps,
 }
 
 /* transform */
-static GstFlowReturn
+/*static GstFlowReturn
 gst_opencvfilter_transform_frame (GstVideoFilter * filter, GstVideoFrame * inframe,
     GstVideoFrame * outframe)
 {
   GstOpencvfilter *opencvfilter = GST_OPENCVFILTER (filter);
 
   return GST_FLOW_OK;
-}
+}NiGo not needed */
 
 static GstFlowReturn
 gst_opencvfilter_transform_frame_ip (GstVideoFilter * filter, GstVideoFrame * frame)
